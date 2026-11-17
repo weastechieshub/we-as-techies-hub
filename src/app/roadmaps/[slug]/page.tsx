@@ -4,7 +4,8 @@ import { jsonLd, pageMetadata } from '@/lib/seo';
 import { groups } from '@/lib/types';
 import { RoadmapBrowser } from '@/components/roadmap-browser';
 import { getRoadmaps, roadmapSlugs } from '@/lib/roadmaps';
-import { ContactSection } from '@/components/chrome';
+import { KeepLearning } from '@/components/learn/keep-learning';
+import { LearnEffects } from '@/components/learn/learn-effects';
 // Only roadmaps with lessons are built; any other /roadmaps/<slug> is the 404 page.
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -45,7 +46,10 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
       >
         <RoadmapBrowser roadmaps={getRoadmaps(slug)} initialSlug={slug} />
       </div>
-      <ContactSection />
+      <div className="lx">
+        <LearnEffects />
+        <KeepLearning />
+      </div>
     </main>
   );
 }

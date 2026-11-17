@@ -4,35 +4,16 @@ import { getArticles, getProfile, getSkills, siteUrl } from '@/lib/content';
 import { jsonLd } from '@/lib/seo';
 import { groups } from '@/lib/types';
 import { roadmapSlugs } from '@/lib/roadmaps';
-import { ChannelIcon, channelNames } from '@/components/channel-icon';
+import { ChannelIcon } from '@/components/channel-icon';
+import { KeepLearning } from '@/components/learn/keep-learning';
 import { LearnEffects } from '@/components/learn/learn-effects';
 import { LearningRoad } from '@/components/learn/learning-road';
 import { MascotHead } from '@/components/learn/mascot-head';
+import { Words } from '@/components/learn/words';
 import './home.css';
 
 // The homepage: courses, the learning path, how it works, and the channels to follow.
 export const metadata = { alternates: { canonical: '/' } };
-
-const brandColour = {
-  youtube: '#ff0000',
-  linkedin: '#0a66c2',
-  facebook: '#0866ff',
-  instagram: '#d62976',
-};
-
-// Splits text into words that slide in one after another; `grad` words get the moving gradient.
-function Words({ text, grad = [], start = 0 }: { text: string; grad?: string[]; start?: number }) {
-  return text.split(' ').map((w, i) => (
-    <span key={i}>
-      <span
-        className={`lx-w ${grad.includes(w.replace(/[.,]/g, '')) ? 'lx-grad' : ''}`}
-        style={{ '--i': start + i } as React.CSSProperties}
-      >
-        {w}
-      </span>{' '}
-    </span>
-  ));
-}
 
 export default function LearnPage() {
   const p = getProfile();
@@ -327,34 +308,7 @@ export default function LearnPage() {
         </div>
       </section>
 
-      {/* Keep learning */}
-      <section
-        className="lx-cta shell"
-        data-guide="follow"
-        data-guide-line="Follow along so you never miss a lesson!"
-      >
-        <p className="lx-eyebrow" data-fx>
-          KEEP LEARNING
-        </p>
-        <h2 className="lx-words" data-fx-trigger>
-          <Words text="New lessons land on YouTube first." grad={['YouTube']} />
-        </h2>
-        <div className="lx-channels" data-fx style={{ '--d': 2 } as React.CSSProperties}>
-          {p.channels.map((c) => (
-            <a
-              key={c.platform}
-              className={`lx-channel is-${c.platform}`}
-              href={c.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ '--brand': brandColour[c.platform] } as React.CSSProperties}
-            >
-              <ChannelIcon platform={c.platform} size={20} inverse={c.platform === 'youtube'} />
-              {channelNames[c.platform]}
-            </a>
-          ))}
-        </div>
-      </section>
+      <KeepLearning />
     </main>
   );
 }

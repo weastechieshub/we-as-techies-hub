@@ -1,0 +1,139 @@
+/* Shared learning styles, used inside an .lx element on the homepage and on the roadmap pages:
+   headings, the entrance effects driven by learn-effects.tsx, and the Keep learning section. */
+.lx {
+  overflow-x: clip;
+}
+.lx-eyebrow {
+  font:
+    10px 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 2px;
+  /* Mixed with the text colour so small labels stay readable (4.5:1) in the light theme too. */
+  color: color-mix(in srgb, var(--cyan) 72%, var(--text));
+  text-transform: uppercase;
+}
+.lx h2 {
+  font-size: clamp(30px, 4.6vw, 54px);
+  line-height: 1.06;
+  letter-spacing: -0.5px;
+  margin: 10px 0 12px;
+  color: var(--text);
+}
+
+/* ---------- Entrance effects (only when motion is welcome) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .fx-ready [data-fx] {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+    filter: blur(6px);
+    transition:
+      opacity 0.75s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 0.75s ease;
+    transition-delay: calc(var(--d, 0) * 110ms);
+  }
+  .fx-ready [data-fx].fx-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .fx-ready .lx-words .lx-w {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.5em) rotate(2deg);
+    filter: blur(10px);
+  }
+  .fx-ready .lx-words.fx-in .lx-w {
+    animation: lx-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: calc(var(--i) * 85ms);
+  }
+}
+@keyframes lx-word {
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.lx-w {
+  display: inline-block;
+}
+.lx-grad {
+  background: linear-gradient(
+    90deg,
+    var(--cyan),
+    var(--blue),
+    var(--pink),
+    var(--orange),
+    var(--cyan)
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: lx-shimmer 8s linear infinite;
+}
+.fx-ready .lx-words.fx-in .lx-w.lx-grad {
+  animation:
+    lx-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
+    lx-shimmer 8s linear infinite;
+  animation-delay: calc(var(--i) * 85ms), 0s;
+}
+@keyframes lx-shimmer {
+  to {
+    background-position: 300% 0;
+  }
+}
+
+/* ---------- Keep learning ---------- */
+.lx-cta {
+  position: relative;
+  padding-block: 90px 110px;
+  text-align: center;
+}
+.lx-cta h2 {
+  margin-inline: auto;
+}
+.lx-channels {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.lx-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.lx-channel:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  box-shadow: 0 12px 30px -14px var(--brand);
+}
+.lx-channel.is-youtube {
+  background: #cc0000;
+  border-color: #cc0000;
+  color: #fff;
+}
+
+/* Reduced motion: everything visible and still. */
+@media (prefers-reduced-motion: reduce) {
+  .lx *,
+  .lx *::before,
+  .lx *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

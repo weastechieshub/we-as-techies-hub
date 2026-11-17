@@ -147,6 +147,17 @@ test('roadmap pages exist only for capabilities with articles', async ({ page })
   ]);
   await page.getByLabel('Search this roadmap').fill('astrophotography');
   await expect(page.getByText('No matching articles.', { exact: false })).toBeVisible();
+  // Roadmap pages end with the same Keep learning section as the homepage.
+  const keepLearning = page.locator('.lx-cta');
+  await expect(keepLearning.getByRole('heading', { level: 2 })).toHaveText(
+    'New lessons land on YouTube first.',
+  );
+  await expect(keepLearning.getByRole('link')).toHaveText([
+    'YouTube',
+    'LinkedIn',
+    'Facebook',
+    'Instagram',
+  ]);
   for (const slug of ['microsoft-foundry', 'azure', 'typescript', 'model-evaluation']) {
     const response = await page.goto(`/roadmaps/${slug}`);
     expect(response?.status(), slug).toBe(404);

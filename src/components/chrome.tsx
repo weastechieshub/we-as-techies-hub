@@ -1,46 +1,10 @@
 import Link from 'next/link';
-import { ArrowDown, ArrowUpRight, Play, Code2 as Github } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Code2 as Github } from 'lucide-react';
 import { getProfile } from '@/lib/content';
 import { roadmapSlugs } from '@/lib/roadmaps';
 import { ThemeToggle } from './theme-provider';
-import { Button } from './ui/button';
 import { ChannelIcon, channelNames } from './channel-icon';
 
-// Opens the YouTube channel (from the profile's channels) from the hero and the closing section.
-export function ContactLink({
-  children = (
-    <>
-      <ChannelIcon platform="youtube" size={20} inverse /> Watch on YouTube
-    </>
-  ),
-  className = '',
-  button = false,
-  buttonVariant = 'outline',
-}: {
-  children?: React.ReactNode;
-  className?: string;
-  button?: boolean;
-  buttonVariant?: 'default' | 'outline';
-}) {
-  const profile = getProfile();
-  if (!profile.youtubeUrl)
-    return button ? (
-      <Button
-        variant={buttonVariant}
-        disabled
-        title="Add your YouTube channel URL in content/profile.md"
-      >
-        YouTube · coming soon <Play size={15} />
-      </Button>
-    ) : (
-      <span className={`muted ${className}`}>YouTube · coming soon</span>
-    );
-  return (
-    <a className={className} href={profile.youtubeUrl} target="_blank" rel="noopener noreferrer">
-      {children}
-    </a>
-  );
-}
 export function Header() {
   const p = getProfile();
   const [firstRoadmap] = roadmapSlugs();
@@ -102,39 +66,5 @@ export function Footer() {
       </div>
       <span className="mono footer-note">PERSPECTIVE BECOMES POSSIBILITY.</span>
     </footer>
-  );
-}
-export function ContactSection() {
-  const p = getProfile();
-  return (
-    <section
-      id="contact"
-      className="contact-section shell"
-      data-guide="follow"
-      data-guide-line="Follow along so you never miss a lesson!"
-    >
-      <div className="contact-signature" aria-hidden="true">
-        <span className="monogram">
-          {p.initials}
-          <i />
-        </span>
-      </div>
-      <div>
-        <span className="eyebrow">THE NEXT CONVERSATION</span>
-        <h2>
-          A relevant opportunity.
-          <br />
-          <span className="muted">A useful conversation.</span>
-        </h2>
-        <p>
-          For a role, a collaboration, or an interesting technical problem.
-          <br className="desktop-only" /> Good work often starts with a conversation.
-        </p>
-        <ContactLink button className="button button-youtube" />
-      </div>
-      <span className="contact-cross" aria-hidden="true">
-        ↗
-      </span>
-    </section>
   );
 }

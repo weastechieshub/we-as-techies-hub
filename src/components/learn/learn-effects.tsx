@@ -1,9 +1,9 @@
 'use client';
 import { useEffect } from 'react';
 
-// Entrance effects for the learning page: elements with [data-fx] rise in (staggered by --d) the
-// first time they appear, [data-fx-trigger] only gets the class (for its own animation), and
-// .lx-tilt cards tilt toward the pointer with a spotlight that follows it.
+// Entrance effects inside the page's .lx element: elements with [data-fx] rise in (staggered by
+// --d) the first time they appear, [data-fx-trigger] only gets the class (for its own animation),
+// and .lx-tilt cards tilt toward the pointer with a spotlight that follows it.
 export function LearnEffects() {
   useEffect(() => {
     const root = document.querySelector<HTMLElement>('.lx');
