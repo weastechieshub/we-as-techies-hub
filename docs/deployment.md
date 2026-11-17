@@ -20,7 +20,13 @@ from the repository's **Actions** tab ("Deploy to GitHub Pages" → **Run workfl
 - **DNS for weastechies.com** (managed at Squarespace):
   - `www` is a CNAME record pointing to `weastechieshub.github.io`.
   - `weastechies.com` forwards to `https://www.weastechies.com` with a Squarespace forwarding rule.
-  - The email (MX), SPF, DKIM, and Google verification records are separate and must stay.
+  - A TXT record on `_github-pages-challenge-weastechieshub` verifies the domain for the
+    weastechieshub GitHub account (Settings → Pages → Verified domains), so no other account can
+    use it on GitHub Pages.
+  - A `google-site-verification` TXT record on `@` verifies the Domain property in Google Search
+    Console, where `https://www.weastechies.com/sitemap.xml` is submitted.
+  - The email (MX), SPF, DKIM, and other Google verification records are separate.
+  - Keep all of these records: removing a verification record un-verifies the domain.
 
 ## Preview mode
 
