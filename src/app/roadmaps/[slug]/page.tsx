@@ -5,6 +5,8 @@ import { groups } from '@/lib/types';
 import { RoadmapBrowser } from '@/components/roadmap-browser';
 import { getRoadmaps, roadmapSlugs } from '@/lib/roadmaps';
 import { ContactSection } from '@/components/chrome';
+// Only roadmaps with lessons are built; any other /roadmaps/<slug> is the 404 page.
+export const dynamicParams = false;
 export function generateStaticParams() {
   return roadmapSlugs().map((slug) => ({ slug }));
 }

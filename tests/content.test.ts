@@ -57,8 +57,8 @@ describe('Markdown catalog', () => {
       }).success,
     ).toBe(false);
   });
-  it('stays in preview with no invented profile destinations', () => {
-    expect(getProfile().preview).toBe(true);
+  it('is public with no invented profile destinations', () => {
+    expect(getProfile().preview).toBe(false);
     expect(getProfile().linkedinUrl).toBe('');
     // Only the published series playlists link out; everything else is a planned label.
     const real = getArticles().flatMap((a) =>

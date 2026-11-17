@@ -100,16 +100,21 @@ test('theme persists and mobile has no horizontal overflow', async ({ page }) =>
   }
 });
 
-test('metadata, preview exclusion, and removed pages', async ({ request, page }) => {
+test('metadata, indexing, and removed pages', async ({ request, page }) => {
   const home = await request.get('/');
   const html = await home.text();
-  expect(html).toContain('noindex');
+  expect(html).not.toContain('noindex');
+  expect(html).not.toContain('preview-banner');
   expect(html).toContain('rel="canonical"');
   expect(html).toContain('"@type":"WebSite"');
   const sitemap = await request.get('/sitemap.xml');
-  expect(await sitemap.text()).not.toContain('/learn');
+  const urls = await sitemap.text();
+  expect(urls).toContain('/roadmaps/model-selection');
+  expect(urls).toContain('/terms');
+  expect(urls).not.toContain('/learn');
   const robots = await request.get('/robots.txt');
-  expect(await robots.text()).toContain('Disallow: /');
+  expect(await robots.text()).toContain('Allow: /');
+  expect(await robots.text()).not.toContain('Disallow: /');
   // Old pages are gone.
   for (const route of ['/learn', '/writing', '/expertise', '/about', '/api/discover']) {
     const response = await page.goto(route);

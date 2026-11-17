@@ -1,17 +1,9 @@
 import type { NextConfig } from 'next';
+
+// The site is built to plain static files in `out/` and hosted on GitHub Pages
+// (see .github/workflows/deploy.yml), so it uses no server features.
 const config: NextConfig = {
-  poweredByHeader: false,
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-        ],
-      },
-    ];
-  },
+  output: 'export',
 };
+
 export default config;

@@ -13,6 +13,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header, Footer } from '@/components/chrome';
 import { MascotGuide } from '@/components/learn/mascot-guide';
 import { getProfile, siteUrl } from '@/lib/content';
+import { shareImage } from '@/lib/seo';
 
 export function generateMetadata(): Metadata {
   const p = getProfile();
@@ -23,9 +24,18 @@ export function generateMetadata(): Metadata {
     title: { default: title, template: `%s · ${p.name}` },
     description,
     applicationName: p.name,
+    referrer: 'strict-origin-when-cross-origin',
     robots: p.preview ? { index: false, follow: false } : { index: true, follow: true },
-    openGraph: { type: 'website', siteName: p.name, locale: 'en_US', title, description, url: '/' },
-    twitter: { card: 'summary_large_image', title, description },
+    openGraph: {
+      type: 'website',
+      siteName: p.name,
+      locale: 'en_US',
+      title,
+      description,
+      url: '/',
+      images: [shareImage],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [shareImage] },
   };
 }
 export const viewport: Viewport = {

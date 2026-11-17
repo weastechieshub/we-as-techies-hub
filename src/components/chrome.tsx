@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowDown, ArrowUpRight, Play, Code2 as Github } from 'lucide-react';
 import { getProfile } from '@/lib/content';
+import { roadmapSlugs } from '@/lib/roadmaps';
 import { ThemeToggle } from './theme-provider';
 import { Button } from './ui/button';
 import { ChannelIcon, channelNames } from './channel-icon';
@@ -42,6 +43,7 @@ export function ContactLink({
 }
 export function Header() {
   const p = getProfile();
+  const [firstRoadmap] = roadmapSlugs();
   return (
     <header className="site-header">
       <div className="shell header-inner">
@@ -56,7 +58,7 @@ export function Header() {
           <Link href="/#courses">Courses</Link>
           <Link href="/#path">Learning path</Link>
           <Link href="/#how">How it works</Link>
-          <Link href="/roadmaps">Roadmaps</Link>
+          <Link href={firstRoadmap ? `/roadmaps/${firstRoadmap}` : '/#path'}>Roadmaps</Link>
         </nav>
         <div className="header-actions">
           <ThemeToggle />

@@ -1,6 +1,14 @@
 import type { Metadata } from 'next';
 import { getProfile } from './content';
 
+// Built by src/app/og-image.png/route.tsx.
+export const shareImage = {
+  url: '/og-image.png',
+  width: 1200,
+  height: 630,
+  alt: 'We as Techies Hub: a platform for learning AI engineering and system design',
+};
+
 // Per-page title, description, canonical URL and social preview. A page's openGraph replaces the
 // layout's whole openGraph object (metadata merges shallowly), so every field is set here.
 export function pageMetadata(title: string, description: string, path: string): Metadata {
@@ -17,13 +25,13 @@ export function pageMetadata(title: string, description: string, path: string): 
       title: fullTitle,
       description,
       url: path,
-      images: ['/opengraph-image'],
+      images: [shareImage],
     },
     twitter: {
       card: 'summary_large_image',
       title: fullTitle,
       description,
-      images: ['/opengraph-image'],
+      images: [shareImage],
     },
   };
 }

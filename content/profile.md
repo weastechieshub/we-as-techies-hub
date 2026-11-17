@@ -21,6 +21,6 @@ linkedinUrl: ""
 githubUrl: ""
 photo: "/images/profile.png"
 # While true, search engines are asked not to index the site and a "Preview" banner shows.
-preview: true
+preview: false
 ---
 Site-wide details: the name, search title and description, and the channel accounts shown in the footer. Set preview to false when the site is ready to be indexed.

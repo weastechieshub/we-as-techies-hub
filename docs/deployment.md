@@ -1,23 +1,31 @@
 # Deployment
 
-The site is a Next.js app with no database and no secrets. `npm run build` builds it and
-`npm run start` serves it with Node.js 22 or newer, so it runs on any host that supports Next.js.
+The site is a static export: `npm run build` writes plain HTML, CSS, JavaScript, and images to
+`out/`. It needs no server, database, or secrets, and it is hosted on GitHub Pages at
+https://www.weastechies.com.
 
-## Before launch
+## How publishing works
 
-1. Set `NEXT_PUBLIC_SITE_URL` to the site's final HTTPS address, without a trailing slash (see
-   `.env.example`). It is used for canonical URLs, social previews, structured data, and the
-   sitemap.
-2. Set `preview: false` in `content/profile.md` so search engines can index the site and the
-   "Preview" banner goes away.
-3. Check the channel links, lesson links, and the social share image after deploying.
+Every push to `main` runs `.github/workflows/deploy.yml`, which installs dependencies, runs the
+unit tests, builds the site, and publishes `out/` to GitHub Pages. You can also start it by hand
+from the repository's **Actions** tab ("Deploy to GitHub Pages" → **Run workflow**).
 
-## Hosting on GitHub Pages
+## Settings it depends on
 
-GitHub Pages serves static files only. The site does not use a server at runtime, but it is not
-set up for a static export yet: that needs `output: 'export'` in `next.config.ts`, a GitHub
-Actions workflow that builds and publishes the `out/` folder, and replacing the `/roadmaps`
-redirect and the security headers, which a static host cannot run.
+- **Repository variable `SITE_URL`** (Settings → Secrets and variables → Actions → Variables):
+  the site's address, `https://www.weastechies.com`. It is used for canonical URLs, social
+  previews, structured data, and the sitemap.
+- **GitHub Pages** (Settings → Pages): source **GitHub Actions**, custom domain
+  `www.weastechies.com`, **Enforce HTTPS** on.
+- **DNS for weastechies.com** (managed at Squarespace):
+  - `www` is a CNAME record pointing to `weastechieshub.github.io`.
+  - `weastechies.com` forwards to `https://www.weastechies.com` with a Squarespace forwarding rule.
+  - The email (MX), SPF, DKIM, and Google verification records are separate and must stay.
+
+## Preview mode
+
+`preview: true` in `content/profile.md` asks search engines not to index the site, empties the
+sitemap, and shows a "Preview" banner. It is `false` now that the site is public.
 
 ## Checking a deployment
 

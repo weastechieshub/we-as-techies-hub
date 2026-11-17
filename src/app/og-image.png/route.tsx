@@ -3,12 +3,13 @@ import path from 'node:path';
 import { ImageResponse } from 'next/og';
 import { getProfile } from '@/lib/content';
 
-export const alt = 'We as Techies Hub: a platform for learning AI engineering and system design';
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
+// The social share image, built once into /og-image.png (a real .png file, so static hosts
+// serve it with the right type). Pages point to it from src/app/layout.tsx and src/lib/seo.ts.
+export const dynamic = 'force-static';
 
-// The social preview: name, what the platform teaches, and the portrait from the hero.
-export default function OG() {
+const size = { width: 1200, height: 630 };
+
+export function GET() {
   const p = getProfile();
   const photo = p.photo
     ? `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), 'public', p.photo)).toString('base64')}`
