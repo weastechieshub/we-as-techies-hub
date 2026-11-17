@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+playwright-report/
+test-results/
+*.tsbuildinfo
+.vercel/
+
+# Local tool settings and generated files
+.claude/
+next-env.d.ts
