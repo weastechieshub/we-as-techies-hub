@@ -1,0 +1,893 @@
+/* The role roadmap, which is the homepage. It sits inside an .lx element, so it gets the shared learning
+   styles and entrance effects from learn.css, and it uses the site's own theme colours. Each
+   section carries a tone-* class, so --accent is that section's colour. */
+@property --rm-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.rm {
+  --rm-ink: color-mix(in srgb, var(--text) 86%, var(--bg));
+  --rm-flag: var(--yellow);
+  --rm-flag-text: #fff;
+}
+.dark .rm {
+  --rm-flag-text: #030712;
+}
+.rm-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 30px 36px 64px;
+}
+.rm-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 32px;
+  margin-bottom: 20px;
+}
+.rm .rm-title {
+  margin: 8px 0 0;
+  font-size: clamp(27px, 2.7vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.5px;
+}
+.rm-sub {
+  max-width: 440px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Jump links between the sections, shown when the sections stack (tablet and phone). */
+.rm-jump {
+  display: none;
+  scrollbar-width: none;
+}
+.rm-jump::-webkit-scrollbar {
+  display: none;
+}
+.rm-jump a {
+  flex: none;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ---------- The road: five sections standing on one line ---------- */
+.rm-road {
+  position: relative;
+  display: grid;
+  grid-template-columns: 206fr 264fr 264fr 264fr 202fr;
+  column-gap: 32px;
+}
+.rm-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 148px;
+  height: 2px;
+  background: var(--rm-ink);
+  transform-origin: left;
+}
+.rm-sec {
+  position: relative;
+  display: grid;
+  grid-row: 1 / span 4;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+.rm-art {
+  position: relative;
+  height: 150px;
+}
+/* A soft glow in the section's colour behind its drawing. */
+.rm-art::before {
+  content: '';
+  position: absolute;
+  inset: 24px -8px 0;
+  background: radial-gradient(
+    60% 90% at 50% 100%,
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+}
+.rm-drawing {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 150px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--rm-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.rm-drawing text {
+  stroke: none;
+  fill: var(--muted);
+  font-size: 11px;
+}
+.rm-drawing .rm-tx {
+  fill: var(--text);
+  font-weight: 600;
+}
+.rm-fs {
+  fill: var(--surface);
+}
+.rm-ai {
+  fill: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  stroke: var(--accent);
+}
+.rm-drawing .rm-ai-t {
+  fill: color-mix(in srgb, var(--accent) 78%, var(--text));
+  font-weight: 700;
+}
+.rm-drawing .rm-big {
+  font-size: 12px;
+}
+.rm-spark,
+.rm-pulse {
+  fill: var(--accent);
+  stroke: none;
+}
+.rm-spark,
+.rm-part {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.rm-dt {
+  fill: var(--rm-ink);
+  stroke: none;
+}
+.rm-flag-fill {
+  fill: var(--rm-flag);
+  stroke: var(--rm-flag);
+}
+.rm-drawing .rm-flag-t {
+  fill: var(--rm-flag-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+.rm-pennant {
+  transform-box: fill-box;
+  transform-origin: right center;
+}
+.rm-pole {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+/* The heading and the line under it are rows of their own, so every section's heading starts on
+   one line and every description starts on the line below the tallest heading. */
+.rm .rm-h {
+  align-self: start;
+  margin: 0;
+  padding-top: 14px;
+  font-size: 20px;
+  line-height: 1.16;
+  letter-spacing: -0.4px;
+}
+.rm-sum {
+  align-self: start;
+  padding: 6px 0 14px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ---------- The skills, drawn as the parts of the system ---------- */
+.rm-stk {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: start;
+}
+/* A block is calm at rest: a plain surface, with the section's colour only in its icon. The
+   colour comes in on hover, where the block lifts, leans toward the pointer and a spotlight
+   follows it (learn-effects.tsx sets --rx, --ry, --mx and --my on .lx-tilt elements). */
+.rm .rm-blk {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  color: var(--text);
+  font:
+    13px/1.25 'Space Grotesk Variable',
+    Inter,
+    Arial,
+    sans-serif;
+  text-align: left;
+  transform: perspective(520px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    translateY(var(--lift, 0px));
+  transition:
+    transform 0.18s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+.rm .rm-blk > * {
+  position: relative;
+  z-index: 1;
+}
+.rm-ic {
+  flex: none;
+  color: color-mix(in srgb, var(--accent) 62%, var(--muted));
+  transition:
+    transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1),
+    color 0.2s ease;
+}
+/* The spotlight. */
+.rm .rm-blk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    140px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 34%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+/* A band of light that sweeps across the block. */
+.rm .rm-blk::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -45%;
+  width: 36%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 45%, transparent),
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .rm .rm-blk:hover {
+    --lift: -2px;
+    border-color: var(--accent);
+    box-shadow:
+      0 12px 26px -14px var(--accent),
+      0 0 24px -6px var(--accent);
+  }
+  .rm .rm-blk:hover::before {
+    opacity: 1;
+  }
+  .rm .rm-blk:hover .rm-ic {
+    color: var(--accent);
+    transform: scale(1.22) rotate(-10deg);
+  }
+  .rm .rm-slab:hover .rm-ic {
+    color: var(--bg);
+  }
+  .rm-frame:hover {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 34px -20px var(--accent);
+  }
+}
+.rm .rm-pill {
+  justify-content: center;
+  border-radius: 999px;
+}
+.rm-frame {
+  position: relative;
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 16px 8px 8px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 12px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.rm-frame + .rm-frame {
+  margin-top: 14px;
+}
+.rm .rm-tab {
+  position: absolute;
+  top: -11px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    600 13px/20px 'Space Grotesk Variable',
+    Inter,
+    Arial,
+    sans-serif;
+}
+.rm .rm-rail {
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 0;
+}
+.rm-vt {
+  writing-mode: vertical-rl;
+}
+.rm-vt.is-up {
+  transform: rotate(180deg);
+}
+.rm-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+/* The platform everything stands on: a solid slab with a slow shine. */
+.rm .rm-slab {
+  min-height: 36px;
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+.rm-slab .rm-ic {
+  color: var(--bg);
+}
+
+/* A skill with lessons: a stronger fill and a breathing glow, and it opens its lesson list. */
+.rm .is-live {
+  cursor: pointer;
+}
+.rm .rm-blk.is-live {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  font-weight: 600;
+  box-shadow: 0 0 18px -6px var(--accent);
+}
+.rm .is-live .rm-ic {
+  color: var(--accent);
+}
+.rm .rm-slab.is-live .rm-ic {
+  color: var(--bg);
+}
+.rm .rm-slab.is-live {
+  background: var(--text);
+}
+.rm .is-live:hover {
+  color: var(--text);
+}
+.rm .rm-slab.is-live:hover {
+  color: var(--bg);
+}
+.rm-name {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.rm-dots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+}
+.rm-d {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.rm-cnt {
+  margin-left: 4px;
+  color: color-mix(in srgb, var(--accent) 78%, var(--text));
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rm-badge {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ---------- The lesson list of the open skill ---------- */
+.rm-pop {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: calc(100% + 16px);
+  width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow:
+    0 18px 50px rgb(0 0 0 / 0.4),
+    0 0 34px -14px var(--accent);
+  outline: none;
+}
+/* The last two sections have no room on their right, so their lesson list opens to the left. */
+.rm-sec:nth-last-child(-n + 2) .rm-pop {
+  left: auto;
+  right: calc(100% + 16px);
+}
+/* The same moving border as the course cards on the homepage. */
+.rm-pop::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--rm-angle),
+    transparent 0deg,
+    var(--accent) 60deg,
+    var(--pink) 115deg,
+    transparent 175deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rm-angle 5s linear infinite;
+  pointer-events: none;
+}
+.rm-pop-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rm .rm-pop h3 {
+  margin: 3px 0 0;
+  font-size: 20px;
+  line-height: 1.2;
+}
+.rm .rm-x {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 8px;
+  color: var(--muted);
+}
+.rm .rm-x:hover {
+  color: var(--text);
+}
+.rm-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rm-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-height: 46px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.rm-num {
+  width: 18px;
+  flex: none;
+  color: var(--subtle);
+  font:
+    500 12px 'IBM Plex Mono',
+    monospace;
+}
+.rm-lt {
+  flex: 1 1 150px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+.rm-acts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.rm-lk {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--raised);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+a.rm-lk:hover {
+  transform: translateY(-2px);
+  border-color: var(--text);
+}
+.rm-lk.is-off {
+  border-style: dashed;
+  background: transparent;
+}
+.rm-lk.is-off svg {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+.rm-lab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  margin-right: 6px;
+  padding: 0 9px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.rm .rm-lab.is-live {
+  border-style: solid;
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---------- Motion (only when motion is welcome) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* The road builds itself from left to right: the line, each section's parts, then its flag.
+     --i is the section's position, --n the part's order inside its drawing. */
+  .fx-ready .rm-road .rm-ground {
+    transform: scaleX(0);
+  }
+  .fx-ready .rm-road.fx-in .rm-ground {
+    animation: rm-grow 1.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .fx-ready .rm-art .rm-part,
+  .fx-ready .rm-art .rm-pulse {
+    opacity: 0;
+  }
+  .fx-ready .rm-art.fx-in .rm-part {
+    animation: rm-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 240ms + var(--n, 0) * 90ms + 250ms);
+  }
+  .fx-ready .rm-art .rm-wire {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .fx-ready .rm-art.fx-in .rm-wire {
+    animation: rm-draw 0.9s ease forwards;
+    animation-delay: calc(var(--i, 0) * 240ms + 550ms);
+  }
+  .fx-ready .rm-art.fx-in .rm-pulse {
+    animation: rm-show 0.5s ease forwards;
+    animation-delay: calc(var(--i, 0) * 240ms + 1400ms);
+  }
+  .fx-ready .rm-art .rm-pole {
+    transform: scaleY(0);
+  }
+  .fx-ready .rm-art.fx-in .rm-pole {
+    animation: rm-pole 0.5s ease forwards;
+    animation-delay: calc(var(--i, 0) * 240ms + 900ms);
+  }
+  .fx-ready .rm-art .rm-pennant {
+    transform: scaleX(0);
+  }
+  .fx-ready .rm-art.fx-in .rm-pennant {
+    animation:
+      rm-unfurl 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) forwards,
+      rm-wave 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 240ms + 1300ms), calc(var(--i, 0) * 240ms + 1800ms);
+  }
+  .rm-spark {
+    animation: rm-twinkle 2.6s ease-in-out infinite;
+  }
+  .rm-glow {
+    animation: rm-breathe 3s ease-in-out infinite;
+  }
+  /* The blocks of a stack arrive one after another (--k is the block's place in its section).
+     The animation only fills backwards, so once a block has arrived its own transform is free
+     to lean toward the pointer. */
+  .fx-ready .rm-stk:not(.fx-in) .rm-blk,
+  .fx-ready .rm-stk:not(.fx-in) .rm-tab {
+    opacity: 0;
+  }
+  .fx-ready .rm-stk.fx-in .rm-blk,
+  .fx-ready .rm-stk.fx-in .rm-tab {
+    animation: rm-block 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--d, 0) * 110ms + var(--k, 0) * 55ms + 120ms);
+  }
+  .fx-ready .rm-stk.fx-in .rm-blk.is-live {
+    animation:
+      rm-block 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards,
+      rm-live 2.8s ease-in-out infinite;
+    animation-delay: calc(var(--d, 0) * 110ms + var(--k, 0) * 55ms + 120ms), 0s;
+  }
+  .rm .rm-blk.is-live {
+    animation: rm-live 2.8s ease-in-out infinite;
+  }
+  /* The band of light crosses a block when the pointer arrives. */
+  .rm .rm-blk:hover::after {
+    animation: rm-sweep 0.75s ease;
+  }
+  .rm-d {
+    animation: rm-dot 2.1s ease-in-out infinite;
+    animation-delay: calc(var(--k, 0) * 120ms);
+  }
+  .rm-slab::after {
+    animation: rm-shine 6s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 500ms + 2s);
+  }
+  .rm-pop {
+    animation: rm-pop 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .rm-row {
+    animation: rm-row 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 40ms + 80ms);
+  }
+}
+@keyframes rm-block {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+}
+@keyframes rm-sweep {
+  from {
+    left: -45%;
+    opacity: 1;
+  }
+  to {
+    left: 115%;
+    opacity: 0.2;
+  }
+}
+@keyframes rm-grow {
+  to {
+    transform: none;
+  }
+}
+@keyframes rm-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rm-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes rm-show {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rm-pole {
+  to {
+    transform: none;
+  }
+}
+@keyframes rm-unfurl {
+  to {
+    transform: none;
+  }
+}
+@keyframes rm-wave {
+  0%,
+  100% {
+    transform: skewY(0deg);
+  }
+  50% {
+    transform: skewY(-3deg);
+  }
+}
+@keyframes rm-twinkle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.6) rotate(45deg);
+    opacity: 0.55;
+  }
+}
+@keyframes rm-breathe {
+  0%,
+  100% {
+    fill-opacity: 1;
+  }
+  50% {
+    fill-opacity: 0.35;
+  }
+}
+@keyframes rm-live {
+  0%,
+  100% {
+    box-shadow: 0 0 18px -6px var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 26px -2px var(--accent);
+  }
+}
+@keyframes rm-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}
+@keyframes rm-shine {
+  0%,
+  70% {
+    left: -40%;
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    left: 110%;
+    opacity: 0;
+  }
+}
+@keyframes rm-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+@keyframes rm-row {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+@keyframes rm-angle {
+  to {
+    --rm-angle: 360deg;
+  }
+}
+/* The travelling dots are SVG animations, which the global reduced-motion rule cannot stop. */
+@media (prefers-reduced-motion: reduce) {
+  .rm-pulse {
+    display: none;
+  }
+}
+
+/* ---------- Tablet: the sections stack, each with its drawing beside its skills ---------- */
+@media (max-width: 1279px) {
+  .rm-shell {
+    padding-inline: 24px;
+  }
+  .rm-jump {
+    position: sticky;
+    top: 77px;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin: 0 -24px 26px;
+    padding: 10px 24px;
+    background: var(--header);
+    backdrop-filter: blur(18px);
+  }
+  .rm-road {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 48px;
+  }
+  .rm-ground {
+    display: none;
+  }
+  .rm-sec {
+    /* A stacked section comes into view by itself, so it does not wait for the ones before it. */
+    --i: 0 !important;
+    grid-row: auto;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-columns: 300px minmax(0, 420px);
+    grid-template-areas:
+      'art stk'
+      'title stk'
+      'text stk'
+      '. stk';
+    column-gap: 40px;
+    scroll-margin-top: 40px;
+  }
+  .rm-art {
+    grid-area: art;
+    border-bottom: 2px solid var(--rm-ink);
+  }
+  .rm-h {
+    grid-area: title;
+  }
+  .rm-sum {
+    grid-area: text;
+  }
+  .rm-stk {
+    grid-area: stk;
+  }
+  .rm-pop,
+  .rm-sec:nth-last-child(-n + 2) .rm-pop {
+    position: relative;
+    left: auto;
+    right: auto;
+    width: auto;
+    margin-top: 6px;
+  }
+}
+
+/* ---------- Phone: one column, bigger blocks to tap ---------- */
+@media (max-width: 760px) {
+  .rm-shell {
+    padding: 22px 16px 48px;
+  }
+  .rm-jump {
+    top: 69px;
+    margin: 0 -16px 22px;
+    padding: 10px 16px;
+  }
+  .rm-sec {
+    display: block;
+  }
+  /* The drawing grows to the width of the phone, centred, with its base on the line. */
+  .rm-art {
+    height: auto;
+  }
+  .rm-drawing {
+    height: auto;
+    max-height: 240px;
+  }
+  .rm .rm-h {
+    font-size: 22px;
+  }
+  .rm .rm-blk {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .rm .rm-slab {
+    min-height: 46px;
+  }
+  .rm-acts {
+    margin-left: 28px;
+  }
+}
+/* The header is shorter on a narrow phone, so the section links sit right under it. */
+@media (max-width: 600px) {
+  .rm-jump {
+    top: 65px;
+  }
+}

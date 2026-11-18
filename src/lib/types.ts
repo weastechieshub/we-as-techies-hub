@@ -1,31 +1,3 @@
-// The homepage rows (and roadmap groups), in order.
-export type GroupId = 'ai' | 'architecture' | 'cloud' | 'engineering';
-export const groups: { id: GroupId; title: string; description: string; color: string }[] = [
-  {
-    id: 'ai',
-    title: 'AI engineering',
-    description: 'Choosing, grounding, and building with AI models.',
-    color: 'cyan',
-  },
-  {
-    id: 'architecture',
-    title: 'System design',
-    description: 'Architecture that holds up as systems grow.',
-    color: 'green',
-  },
-  {
-    id: 'cloud',
-    title: 'Cloud & data',
-    description: 'Where systems run and how data moves.',
-    color: 'blue',
-  },
-  {
-    id: 'engineering',
-    title: 'Software engineering',
-    description: 'Languages, frameworks, and quality.',
-    color: 'orange',
-  },
-];
 export type ChannelPlatform = 'youtube' | 'linkedin' | 'facebook' | 'instagram';
 
 // content/profile.md
@@ -46,29 +18,62 @@ export type Profile = {
   preview: boolean;
 };
 
-// One capability (a file in content/roadmaps). Its categories are the steps of its roadmap.
-export type Skill = {
-  slug: string;
-  title: string;
-  group: GroupId;
-  description: string;
-  order: number;
-  // `more` adds a "More coming soon" card after the step's articles on the roadmap page.
-  topics: { id: string; title: string; more: boolean }[];
-};
+// content/role-roadmap.md: the role roadmap on the home page.
+export type RoleTone = 'cyan' | 'blue' | 'orange' | 'pink' | 'green' | 'yellow';
+export type RoleDrawingKind = 'web-app' | 'agent-app' | 'services' | 'platform' | 'beyond';
+export type RoleIcon =
+  | 'code'
+  | 'layers'
+  | 'cloud'
+  | 'database'
+  | 'user'
+  | 'network'
+  | 'check'
+  | 'shield'
+  | 'sparkles'
+  | 'book'
+  | 'box'
+  | 'refresh'
+  | 'link'
+  | 'pin'
+  | 'compass'
+  | 'chart';
+// Where a skill sits in its section's system stack.
+export type RolePart =
+  'role' | 'design' | 'testing' | 'layer' | 'security' | 'operations' | 'platform';
 
-// One published lesson inside a roadmap step.
-export type Article = {
-  slug: string;
+// One lesson of a skill. A link is missing while it is not up yet.
+export type RoleLesson = {
   title: string;
-  description: string;
-  skill: string;
-  topic: string;
-  tags: string[];
-  order: number;
-  linkedinUrl?: string;
   youtubeUrl?: string;
   facebookUrl?: string;
-  image?: string;
-  imageAlt?: string;
+  linkedinUrl?: string;
+  labUrl?: string;
+};
+
+// One block under a section. It lights up when it has lessons.
+export type RoleSkill = {
+  id: string;
+  title: string;
+  icon: RoleIcon;
+  part?: RolePart;
+  group?: string;
+  lessons: RoleLesson[];
+};
+
+// One column of the roadmap. `flag` is the job title reached when the section is done.
+export type RoleSection = {
+  id: string;
+  title: string;
+  summary: string;
+  drawing: RoleDrawingKind;
+  tone: RoleTone;
+  flag?: string;
+  skills: RoleSkill[];
+};
+
+export type RoleRoadmap = {
+  title: string;
+  description: string;
+  sections: RoleSection[];
 };

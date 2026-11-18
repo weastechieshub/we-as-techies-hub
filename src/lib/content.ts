@@ -3,7 +3,7 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { z } from 'zod';
 import { cache as reactCache } from 'react';
-import type { Article, Profile, Skill } from './types';
+import type { Profile, RoleRoadmap } from './types';
 
 // Everything the site shows is read from Markdown files in /content and validated here.
 const root = path.join(process.cwd(), 'content');
@@ -25,8 +25,6 @@ function cache<T>(read: () => T): () => T {
 }
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
-const group = z.enum(['ai', 'architecture', 'cloud', 'engineering']);
-const order = z.number().int().positive();
 const httpsUrl = z
   .string()
   .url()
@@ -44,45 +42,6 @@ const instagram = onHost(['instagram.com'], 'Use an Instagram URL');
 const planned = <T extends z.ZodTypeAny>(url: T) =>
   z.union([z.literal('coming-soon'), url]).optional();
 
-const articleSchema = z.object({
-  id: slug.optional(),
-  title: z.string().min(1),
-  description: z.string().min(1),
-  order,
-  linkedinUrl: planned(linkedin),
-  youtubeUrl: planned(youtube),
-  facebookUrl: planned(facebook),
-  tags: z.array(z.string()).default([]),
-  status: z.enum(['published', 'draft']).default('published'),
-  image: z
-    .string()
-    .refine(
-      (v) => (v.startsWith('/') && !v.startsWith('//')) || /^https:\/\//.test(v),
-      'Use a local path or HTTPS image URL',
-    )
-    .optional(),
-  imageAlt: z.string().optional(),
-});
-
-export const roadmapSchema = z.object({
-  title: z.string().min(1),
-  slug,
-  group,
-  order,
-  description: z.string().min(1),
-  categories: z
-    .array(
-      z.object({
-        id: slug.optional(),
-        title: z.string().min(1),
-        order,
-        moreComingSoon: z.boolean().default(false),
-        articles: z.array(articleSchema).default([]),
-      }),
-    )
-    .default([]),
-});
-
 const identifier = (title: string) =>
   slug.parse(
     title
@@ -94,76 +53,6 @@ const identifier = (title: string) =>
 function unique(values: (string | number)[], label: string) {
   if (new Set(values).size !== values.length) throw new Error(`Duplicate ${label}`);
 }
-
-function markdownFiles(folder: string) {
-  return fs
-    .readdirSync(path.join(root, folder))
-    .filter((f) => f.endsWith('.md'))
-    .map((file) => matter(fs.readFileSync(path.join(root, folder, file), 'utf8')).data);
-}
-
-// Every roadmap (one file per capability), with IDs filled in and everything sorted by `order`.
-const getCatalog = cache(() => {
-  const catalog = markdownFiles('roadmaps')
-    .map((data) => {
-      const roadmap = roadmapSchema.parse(data);
-      const categories = roadmap.categories
-        .map((c) => ({
-          ...c,
-          id: c.id ?? identifier(c.title),
-          articles: c.articles
-            .map((a) => ({ ...a, id: a.id ?? identifier(a.title) }))
-            .sort((a, b) => a.order - b.order),
-        }))
-        .sort((a, b) => a.order - b.order);
-      unique(
-        categories.map((c) => c.id),
-        `${roadmap.slug} category IDs`,
-      );
-      unique(
-        categories.map((c) => c.order),
-        `${roadmap.slug} category orders`,
-      );
-      for (const c of categories)
-        unique(
-          c.articles.map((a) => a.order),
-          `${roadmap.slug}/${c.id} article orders`,
-        );
-      return { ...roadmap, categories };
-    })
-    .sort((a, b) => a.order - b.order || a.slug.localeCompare(b.slug));
-  unique(
-    catalog.map((r) => r.slug),
-    'roadmap slugs',
-  );
-  unique(
-    catalog.flatMap((r) => r.categories.flatMap((c) => c.articles.map((a) => a.id))),
-    'article IDs (set an explicit id for repeated titles)',
-  );
-  return catalog;
-});
-
-export const getSkills = cache((): Skill[] =>
-  getCatalog().map((r) => ({
-    slug: r.slug,
-    title: r.title,
-    group: r.group,
-    description: r.description,
-    order: r.order,
-    topics: r.categories.map((c) => ({ id: c.id, title: c.title, more: c.moreComingSoon })),
-  })),
-);
-
-// Published articles (drafts are hidden), in roadmap, category and article order.
-export const getArticles = cache((): Article[] =>
-  getCatalog().flatMap((r) =>
-    r.categories.flatMap((c) =>
-      c.articles
-        .filter((a) => a.status === 'published')
-        .map(({ id, status: _status, ...a }) => ({ ...a, slug: id, skill: r.slug, topic: c.id })),
-    ),
-  ),
-);
 
 const channelHosts = {
   youtube: youtube,
@@ -214,6 +103,110 @@ export const getTerms = cache(() => {
     })
     .parse(data);
   return { ...metadata, body: content.trim() };
+});
+
+const roleLessonSchema = z.object({
+  title: z.string().min(1),
+  youtubeUrl: planned(youtube),
+  facebookUrl: planned(facebook),
+  linkedinUrl: planned(linkedin),
+  labUrl: planned(
+    z
+      .string()
+      .refine(
+        (v) => (v.startsWith('/') && !v.startsWith('//')) || /^https:\/\//.test(v),
+        'Use a local path or HTTPS URL',
+      ),
+  ),
+});
+
+export const roleRoadmapSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  sections: z
+    .array(
+      z.object({
+        id: slug,
+        title: z.string().min(1),
+        summary: z.string().min(1),
+        drawing: z.enum(['web-app', 'agent-app', 'services', 'platform', 'beyond']),
+        tone: z.enum(['cyan', 'blue', 'orange', 'pink', 'green', 'yellow']),
+        flag: z.string().min(1).optional(),
+        skills: z
+          .array(
+            z.object({
+              id: slug.optional(),
+              title: z.string().min(1),
+              icon: z
+                .enum([
+                  'code',
+                  'layers',
+                  'cloud',
+                  'database',
+                  'user',
+                  'network',
+                  'check',
+                  'shield',
+                  'sparkles',
+                  'book',
+                  'box',
+                  'refresh',
+                  'link',
+                  'pin',
+                  'compass',
+                  'chart',
+                ])
+                .default('box'),
+              part: z
+                .enum(['role', 'design', 'testing', 'layer', 'security', 'operations', 'platform'])
+                .optional(),
+              group: z.string().min(1).optional(),
+              lessons: z.array(roleLessonSchema).default([]),
+            }),
+          )
+          .min(1),
+      }),
+    )
+    .min(1),
+});
+
+// A link that is up, or nothing while it is still 'coming-soon'.
+const live = (url?: string) => (url && url !== 'coming-soon' ? url : undefined);
+
+// The role roadmap on the home page: its sections, their skills, and each skill's lessons.
+export const getRoleRoadmap = cache((): RoleRoadmap => {
+  const { data } = matter(fs.readFileSync(path.join(root, 'role-roadmap.md'), 'utf8'));
+  const roadmap = roleRoadmapSchema.parse(data);
+  unique(
+    roadmap.sections.map((s) => s.id),
+    'role roadmap section IDs',
+  );
+  const sections = roadmap.sections.map((s) => {
+    const skills = s.skills.map((k) => ({
+      ...k,
+      id: k.id ?? identifier(k.title),
+      lessons: k.lessons.map((l) => ({
+        title: l.title,
+        youtubeUrl: live(l.youtubeUrl),
+        facebookUrl: live(l.facebookUrl),
+        linkedinUrl: live(l.linkedinUrl),
+        labUrl: live(l.labUrl),
+      })),
+    }));
+    unique(
+      skills.map((k) => k.id),
+      `${s.id} skill IDs`,
+    );
+    // A section is drawn as a system stack only when every skill says which part it is.
+    const placed = skills.filter((k) => k.part).length;
+    if (placed && placed !== skills.length)
+      throw new Error(`${s.id}: give every skill a part, or none of them`);
+    for (const part of ['role', 'design', 'testing', 'security', 'operations', 'platform'])
+      if (skills.filter((k) => k.part === part).length > 1)
+        throw new Error(`${s.id}: only one skill can be the ${part} part`);
+    return { ...s, skills };
+  });
+  return { ...roadmap, sections };
 });
 
 export function siteUrl() {

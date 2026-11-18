@@ -1,18 +1,18 @@
 # We as Techies Hub
 
-A platform for learning AI engineering and system design on the Microsoft stack. Short video
-courses on YouTube and Facebook, PDF guides on LinkedIn, and roadmaps that connect them.
+A platform for learning AI engineering and system design on the Microsoft stack. One role
+roadmap gives the direction; each lesson links to its video, its PDF guide and its lab.
 
 Built with Next.js (App Router), React, TypeScript, and Tailwind CSS. All content is Markdown in
 `content/`; there is no database and no backend service.
 
 ## What the site has
 
-- **Homepage (`/`)**: the latest courses with their playlist links, a learning path drawn as a
-  road through four areas (AI engineering, System design, Cloud & data, Software engineering),
-  how the lessons work, and the channels to follow.
-- **Roadmaps (`/roadmaps/<slug>`)**: one page per capability that has published lessons, with its
-  steps, lesson cards, and search. Capabilities without lessons show as "Soon" on the homepage.
+- **Homepage (`/`)**: the role roadmap, from the software engineering base through three levels
+  to FDE and AI Architect. Each section has a drawing of what you can build by its end, a flag for
+  the job title it leads to, and its skills drawn as the parts of that system. A skill with
+  lessons lights up and opens its lesson list: the lab first, then the YouTube, Facebook and
+  LinkedIn links, each shown as coming soon until it is up. The channels to follow close the page.
 - **Terms (`/terms`)**: terms and conditions, written in `content/terms.md`.
 - **The head mascot** from the videos, which follows visitors down each page and says a line for
   each section.
@@ -34,24 +34,25 @@ Then open http://127.0.0.1:3000.
 ```text
 content/
   profile.md          site name, search title and description, channel accounts, preview switch
-  roadmaps/*.md       one file per capability: the homepage road and the roadmap pages
+  role-roadmap.md     the roadmap on the homepage: sections, skills and each skill's lessons
   terms.md            terms and conditions
 public/
   images/mascot/      head mascot frames: rest, talking, blink
   images/profile.png  picture used in the social share image
 src/
-  app/                routes: homepage, roadmaps, terms, not found, sitemap, robots, share image
+  app/                routes: homepage, terms, not found, sitemap, robots, share image
   components/         UI components
-  components/learn/   homepage effects, the learning road, and the mascot
-  lib/                content loading and validation, search, SEO helpers, types
+  components/learn/   entrance effects, the Keep learning section, and the mascot
+  components/roadmap/ the roadmap's drawings and skill stacks
+  lib/                content loading and validation, SEO helpers, types
 tests/                unit tests (Vitest) and browser tests (Playwright, with axe accessibility checks)
 docs/                 content and deployment guides
 ```
 
 ## Content
 
-Read the [content guide](docs/content.md) to add lessons, link playlists, open a new roadmap, or
-change what the mascot says. Content changes go live with the next deployment.
+Read the [content guide](docs/content.md) to add lessons and their links, change a section or a
+skill, or change what the mascot says. Content changes go live with the next deployment.
 
 ## Checks
 

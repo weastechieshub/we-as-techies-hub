@@ -1,84 +1,67 @@
 import { test, expect } from '@playwright/test';
 
-test('homepage shows courses, the learning path, channels, and opens the roadmap', async ({
-  page,
-}) => {
+test('the homepage is the role roadmap, with its menu, channels and footer', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName(
-    'Learn AI engineering. One short lesson at a time.',
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Engineer to AI Engineer to FDE / AI Architect',
   );
-  await expect(page.locator('header nav a')).toHaveText([
-    'Courses',
-    'Learning path',
-    'How it works',
-    'Roadmaps',
+  // The homepage is the roadmap, so the menu has no link to it: only the labs, as a label until
+  // they open. The logo leads home.
+  await expect(page.locator('header nav a')).toHaveCount(0);
+  await expect(page.locator('header nav .nav-soon')).toHaveText('Labs Soon');
+  await expect(page.locator('header a.brand')).toHaveAttribute('href', '/');
+  await expect(page.locator('.rm-sec h2')).toHaveText([
+    'Software Engineering Base',
+    'Level 1: Practitioner',
+    'Level 2: Professional',
+    'Level 3: Expert',
+    'Beyond: FDE and AI Architect',
   ]);
-  await expect(page.locator('.lx-course')).toHaveCount(2);
-  await expect(page.locator('.lx-course a[href*="youtube.com/playlist"]')).toHaveCount(2);
-  await expect(page.locator('.lx-course a[href*="facebook.com/watch"]')).toHaveCount(2);
-  await expect(page.locator('.lx-stop h3')).toHaveText([
-    'AI engineering',
-    'System design',
-    'Cloud & data',
-    'Software engineering',
-  ]);
-  // Only Model selection has a roadmap so far; every other chip on the road is "Soon".
-  await expect(page.locator('.lx-chip.is-live')).toHaveCount(1);
-  await expect(page.locator('.lx-chip.is-live')).toHaveAttribute(
-    'href',
-    '/roadmaps/model-selection',
-  );
-  await expect(page.locator('.lx-chip:not(.is-live)')).toHaveCount(18);
-  await expect(page.locator('.lx-runner')).toHaveCount(1);
+  // A flag stands at the end of the section that leads to that job title.
+  await expect(page.locator('.rm-flag-t')).toHaveCount(3);
+  await expect(page.locator('#base .rm-flag-t')).toHaveText('Engineer');
+  await expect(page.locator('#level-2 .rm-flag-t')).toHaveText('AI Engineer');
+  await expect(page.locator('#level-3 .rm-flag-t')).toHaveText('FDE / AI Architect');
   await expect(page.locator('.lx-channel')).toHaveText([
     'YouTube',
     'LinkedIn',
     'Facebook',
     'Instagram',
   ]);
-  await expect(page.locator('.footer-channels a')).toHaveText([
-    'YouTube',
-    'LinkedIn',
-    'Facebook',
-    'Instagram',
-  ]);
-  await expect(
-    page.locator('.footer-channels a[target="_blank"][rel="noopener noreferrer"]'),
-  ).toHaveCount(4);
-
-  // The guide head stays away in the hero, then follows you into Courses and speaks.
-  await expect(page.locator('.lx-guide')).toHaveCount(0);
-  await page.locator('#courses').scrollIntoViewIfNeeded();
-  await page.evaluate(() => window.scrollBy(0, 200));
-  await expect(page.locator('.lx-guide:not(.is-away) .lx-bubble')).toContainText('Start here', {
+  await expect(page.locator('.lx-channel[target="_blank"][rel="noopener noreferrer"]')).toHaveCount(
+    4,
+  );
+  // The footer keeps only Terms and Back to top.
+  await expect(page.locator('footer a')).toHaveText(['Terms', 'Back to top']);
+  // The guide head drops into the corner and speaks.
+  await expect(page.locator('.lx-guide:not(.is-away) .lx-bubble')).toContainText('Glowing skills', {
     timeout: 8000,
   });
-
-  await page.locator('.lx-chip.is-live').click();
-  await expect(page).toHaveURL('/roadmaps/model-selection');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Model selection');
-  await expect(page.locator('#models .roadmap-title')).toHaveText('Models & inference');
-  await expect(page.locator('#models .topic-article:not(.roadmap-more)')).toHaveCount(2);
-  await expect(page.locator('#models .roadmap-more')).toHaveText(/More coming soon/);
-  await expect(
-    page.getByRole('heading', { name: 'Understand a model card', exact: true }),
-  ).toBeVisible();
-  // YouTube and Facebook link to the series playlists; the LinkedIn PDFs are still planned.
-  await expect(page.locator('#models .article-actions a')).toHaveCount(4);
-  await expect(
-    page.locator('#models .article-actions a[href*="youtube.com/playlist"]'),
-  ).toHaveCount(2);
-  await expect(page.locator('#models .article-actions a[href*="facebook.com/watch"]')).toHaveCount(
-    2,
-  );
-  await expect(page.locator('#models .article-coming-soon')).toHaveCount(2);
-  await expect(page.locator('.roadmap-center button')).toHaveCount(0);
-  await page.getByLabel('Search this roadmap').fill('lifecycle');
-  await expect(page.locator('#models .article-card')).toHaveCount(1);
-  await expect(page.locator('#models .roadmap-more')).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+test('a skill with lessons opens them, lab first, with every link marked coming soon', async ({
+  page,
+}) => {
+  await page.goto('/');
+  // Only a skill with lessons is lit.
+  const lit = page.locator('.rm-blk.is-live');
+  await expect(lit).toHaveCount(1);
+  await expect(lit).toContainText('Foundry and models');
+  await lit.click();
+  const lessons = page.getByRole('dialog', { name: 'Foundry and models lessons' });
+  await expect(lessons.locator('.rm-row')).toHaveCount(7);
+  // No lesson link is up yet, so nothing in the list links out.
+  await expect(lessons.locator('a')).toHaveCount(0);
+  for (const channel of ['YouTube', 'Facebook', 'LinkedIn'])
+    await expect(lessons.getByRole('img', { name: `${channel}: coming soon` })).toHaveCount(7);
+  // The lab comes first in every lesson.
+  await expect(lessons.locator('.rm-acts > :first-child')).toHaveText(Array(7).fill('Lab soon'));
+  await page.keyboard.press('Escape');
+  await expect(lessons).toHaveCount(0);
+  await expect(lit).toBeFocused();
 });
 
 test('theme persists and mobile has no horizontal overflow', async ({ page }) => {
@@ -89,7 +72,7 @@ test('theme persists and mobile has no horizontal overflow', async ({ page }) =>
   await expect(page.locator('html')).toHaveClass(/light/);
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
-    for (const route of ['/', '/roadmaps/model-selection', '/terms']) {
+    for (const route of ['/', '/terms']) {
       await page.goto(route);
       await page.waitForLoadState('networkidle');
       expect(
@@ -109,14 +92,22 @@ test('metadata, indexing, and removed pages', async ({ request, page }) => {
   expect(html).toContain('"@type":"WebSite"');
   const sitemap = await request.get('/sitemap.xml');
   const urls = await sitemap.text();
-  expect(urls).toContain('/roadmaps/model-selection');
   expect(urls).toContain('/terms');
+  expect(urls).not.toContain('/roadmaps');
   expect(urls).not.toContain('/learn');
   const robots = await request.get('/robots.txt');
   expect(await robots.text()).toContain('Allow: /');
   expect(await robots.text()).not.toContain('Disallow: /');
   // Old pages are gone.
-  for (const route of ['/learn', '/writing', '/expertise', '/about', '/api/discover']) {
+  for (const route of [
+    '/learn',
+    '/writing',
+    '/expertise',
+    '/about',
+    '/api/discover',
+    '/roadmaps',
+    '/roadmaps/model-selection',
+  ]) {
     const response = await page.goto(route);
     expect(response?.status(), route).toBe(404);
   }
@@ -132,57 +123,4 @@ test('capture desktop and mobile previews', async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath('homepage-light.png'), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: testInfo.outputPath('homepage-mobile.png'), fullPage: true });
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.getByRole('button', { name: 'Switch to dark theme' }).click();
-  await page.goto('/roadmaps/model-selection');
-  await page.screenshot({ path: testInfo.outputPath('roadmap.png'), fullPage: true });
-});
-
-test('roadmap pages exist only for capabilities with articles', async ({ page }) => {
-  await page.goto('/roadmaps');
-  await expect(page).toHaveURL('/roadmaps/model-selection');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Model selection');
-  await expect(page.getByRole('group', { name: 'Roadmaps' }).getByRole('button')).toHaveText([
-    'Model selection',
-  ]);
-  await page.getByLabel('Search this roadmap').fill('astrophotography');
-  await expect(page.getByText('No matching articles.', { exact: false })).toBeVisible();
-  // Roadmap pages end with the same Keep learning section as the homepage.
-  const keepLearning = page.locator('.lx-cta');
-  await expect(keepLearning.getByRole('heading', { level: 2 })).toHaveText(
-    'New lessons land on YouTube first.',
-  );
-  await expect(keepLearning.getByRole('link')).toHaveText([
-    'YouTube',
-    'LinkedIn',
-    'Facebook',
-    'Instagram',
-  ]);
-  for (const slug of ['microsoft-foundry', 'azure', 'typescript', 'model-evaluation']) {
-    const response = await page.goto(`/roadmaps/${slug}`);
-    expect(response?.status(), slug).toBe(404);
-  }
-});
-
-test('article cards keep equal dimensions across link states', async ({ page }) => {
-  for (const width of [1280, 390, 320]) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto('/roadmaps/model-selection');
-    const dimensions = await page.locator('.article-card').evaluateAll((cards) =>
-      cards.map((card) => {
-        const box = card.getBoundingClientRect();
-        const actions = card.querySelector('.article-actions');
-        return {
-          width: Math.round(box.width),
-          height: Math.round(box.height),
-          overflow: card.scrollWidth > card.clientWidth,
-          actionsFit: !actions || actions.getBoundingClientRect().bottom <= box.bottom,
-        };
-      }),
-    );
-    expect(dimensions.length).toBeGreaterThan(0);
-    expect(new Set(dimensions.map((d) => d.width)).size).toBe(1);
-    expect(new Set(dimensions.map((d) => d.height)).size).toBe(1);
-    expect(dimensions.every((d) => !d.overflow && d.actionsFit)).toBe(true);
-  }
 });
