@@ -11,79 +11,69 @@ message.
 | `name`, `initials` | The site name and the two letters in the logo. |
 | `headline`, `description` | Used in the social share image and as search fallbacks. |
 | `seoTitle`, `seoDescription` | The homepage title (`<name> — <seoTitle>`) and search description. |
-| `channels` | YouTube, LinkedIn, Facebook, and Instagram accounts, in the order the footer and homepage show them. Each URL must be on its own platform. The YouTube one is also the red "Watch on YouTube" button. |
+| `channels` | YouTube, LinkedIn, Facebook, and Instagram accounts, in the order the Keep learning section shows them. Each URL must be on its own platform. |
 | `photo` | A picture in `public/` (for example `/images/profile.png`) for the social share image. |
 | `linkedinUrl`, `githubUrl` | Optional extra profile links. |
 | `preview` | While `true`, search engines are asked not to index the site, the sitemap is empty, and a "Preview" banner shows. Set it to `false` at launch. |
 
-## Roadmaps: `content/roadmaps/*.md`
+## The roadmap: `content/role-roadmap.md`
 
-One file per capability. Each one is a chip on the homepage road. Once it has at least one
-published lesson, it also gets its own page at `/roadmaps/<slug>` and a "Start" link.
-
-A capability with no lessons yet only needs its basics:
+The homepage is one roadmap. Its `sections` are the columns, left to right. Each section has
+`skills` (the blocks under it), and a skill can have `lessons`.
 
 ```md
 ---
-title: Microsoft Foundry
-slug: microsoft-foundry
-group: ai
-order: 2
-description: Models, agents, and the decisions that connect them.
+title: Engineer to AI Engineer to FDE / AI Architect
+description: Follow one project from a plain web app to an agent platform.
+sections:
+  - id: level-1
+    title: 'Level 1: Practitioner'
+    summary: Build your first agent. It answers from company data, uses tools, and ships in a tested web app.
+    drawing: agent-app
+    tone: cyan
+    flag: AI Engineer
+    skills:
+      - title: Foundry and models
+        icon: box
+        part: layer
+        lessons:
+          - title: Parameters and model size
+            youtubeUrl: https://www.youtube.com/watch?v=YOUR-VIDEO
+            facebookUrl: coming-soon
+            linkedinUrl: coming-soon
+            labUrl: coming-soon
 ---
 ```
 
-A roadmap with lessons adds `categories` (the steps of the roadmap) and their `articles` (the
-lessons):
+### Section fields
 
-```md
----
-title: Model selection
-slug: model-selection
-group: ai
-order: 1
-description: Choosing the right model, not building one.
-categories:
-  - id: models
-    title: Models & inference
-    order: 1
-    moreComingSoon: true
-    articles:
-      - id: understand-a-model-card
-        title: Understand a model card
-        order: 1
-        description: What a model card tells you about a model.
-        youtubeUrl: https://www.youtube.com/playlist?list=YOUR-PLAYLIST
-        facebookUrl: https://www.facebook.com/watch/PAGE-ID/PLAYLIST-ID/
-        linkedinUrl: coming-soon
-        tags:
-          - model card
----
-```
+- `id` is the section's anchor (`/#level-1`). It must be unique, lowercase, with hyphens.
+- `title` and `summary` are the heading and the one line under the drawing.
+- `drawing` picks the picture above the section: `web-app`, `agent-app`, `services`, `platform`,
+  or `beyond`. The drawings are in `src/components/roadmap/role-drawing.tsx`.
+- `tone` is the section's colour: `cyan`, `blue`, `orange`, `pink`, `green`, or `yellow`.
+- `flag` is the job title reached when the section is done. Leave it out for no flag.
 
-### Fields
+### Skill fields
 
-- `slug` sets the URL. It must be unique, lowercase, with hyphens.
-- `group` picks the homepage row and road stop: `ai` (AI engineering), `architecture` (System
-  design), `cloud` (Cloud & data), or `engineering` (Software engineering). Their names,
-  descriptions, and colours are in `src/lib/types.ts`.
-- `order` sorts capabilities, steps, and lessons. Use unique orders within each roadmap and step.
-- `id` is optional on steps and lessons; without it one is made from the title. Keep IDs stable
-  when you rename a title, and give lessons with the same title their own IDs.
-- `moreComingSoon: true` on a step adds a "More coming soon" card after its lessons.
-- `tags` are extra search words for a lesson.
-- `status: draft` hides a lesson that is not ready.
-- `image` and `imageAlt` add a picture to a lesson card (a local `/images/...` path or an HTTPS
-  URL). Without one, the card shows a small sketch.
+- `title` is the text on the block. `id` is optional; without it one is made from the title.
+- `icon` is one of `code`, `layers`, `cloud`, `database`, `user`, `network`, `check`, `shield`,
+  `sparkles`, `book`, `box`, `refresh`, `link`, `pin`, `compass`, or `chart`.
+- `part` places the block in the section's system stack: `role` (the pill on top), `design` (the
+  frame's label), `testing` (left side), `layer` (the stacked blocks, in file order), `security`
+  (right side), `operations` (the band under the frame), or `platform` (the base). Give every
+  skill of a section a part, or none; only `layer` can be used more than once.
+- `group` puts skills in named boxes instead, as the Beyond section does.
+- A section whose skills have neither is a plain list of blocks.
 
-### Lesson links
+### Lessons and their links
 
-- `youtubeUrl` (youtube.com or youtu.be) and `facebookUrl` (facebook.com, fb.com, or fb.watch) are
-  for the video playlists. `linkedinUrl` (linkedin.com) is for the PDF post.
-- Each one takes an HTTPS URL for a clickable link, `coming-soon` for a muted label, or can be left
-  out to hide it. Leaving out all three hides the link row.
-- Lessons with a YouTube link also appear as course cards in the homepage's "The latest courses"
-  section.
+- A skill with at least one lesson lights up, shows a dot per lesson, and opens its lesson list.
+- `youtubeUrl` (youtube.com or youtu.be), `facebookUrl` (facebook.com, fb.com, or fb.watch) and
+  `linkedinUrl` (linkedin.com) take an HTTPS URL for a clickable icon. Write `coming-soon`, or
+  leave the field out, for a greyed icon.
+- `labUrl` takes a path on this site (`/labs/...`) or an HTTPS URL and shows "Open lab". Without
+  one the lesson shows "Lab soon".
 
 ## Terms: `content/terms.md`
 
@@ -93,6 +83,5 @@ Markdown below it.
 ## What the mascot says
 
 Each section that should have a mascot line has `data-guide` and `data-guide-line` attributes in
-its component (for example `src/app/page.tsx` for the homepage). Edit the `data-guide-line` text
-to change what it says. A section with `data-guide` but no line sends the mascot away while it is
-on screen.
+its component (`src/app/page.tsx` for the homepage). Edit the `data-guide-line` text to change what
+it says. A section with `data-guide` but no line sends the mascot away while it is on screen.

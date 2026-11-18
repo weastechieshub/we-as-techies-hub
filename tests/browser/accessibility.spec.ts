@@ -5,7 +5,7 @@ test('primary pages meet automated WCAG AA checks in both themes', async ({ page
   test.setTimeout(90000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const theme of ['dark', 'light']) {
-    for (const route of ['/', '/roadmaps/model-selection', '/terms']) {
+    for (const route of ['/', '/terms']) {
       await page.goto(route);
       if (
         theme === 'light' &&
